@@ -8,6 +8,7 @@ import java.io.FileWriter
 import java.io.File
 import org.jsoup.Jsoup
 import scalaj.http._
+import sys.process._
 
 /** Percentage of countries/regions with increasing COVID-19 Infection rate
   * 
@@ -153,7 +154,7 @@ object InfectionRates {
         val jsonData = Jsoup.connect( url ).ignoreContentType( true ).execute.body
 
         // Make the json
-        val jsonWriter = new FileWriter(new File( s"datalake/${fileName}" ))
+        val jsonWriter = new FileWriter(new File( s"datalake/InfectionRates/${fileName}" ))
 
         // Write the json to the file
         jsonWriter.write(jsonData)
@@ -177,7 +178,7 @@ object InfectionRates {
         //val todayJson = spark.read.option("true", "multiline").json("s3a://adam-king-848/data/today.json")
 
         // Reads in a local json file
-        val todayJson = spark.read.json("datalake/today.json")
+        val todayJson = spark.read.json("datalake/InfectionRates/today.json")
 
         // Makes a DataFrame with a schema for columns
         val today = todayJson.withColumn("Region",when($"country".isin(Africa: _*), "Africa")
@@ -206,7 +207,7 @@ object InfectionRates {
         //val yesterdayTemp = spark.read.option("true", "multiline").json("s3a://adam-king-848/data/yesterday.json")
 
         // Reads in a local json file
-        val yesterdayTemp = spark.read.json("datalake/yesterday.json")
+        val yesterdayTemp = spark.read.json("datalake/InfectionRates/yesterday.json")
 
 
         // Makes a DataFrame with a schema for columns
@@ -265,7 +266,6 @@ object InfectionRates {
                 WHERE yesterday.Region='Asia'
             """
         )
-
 
         val dfCaribbean= spark.sql(
             """
